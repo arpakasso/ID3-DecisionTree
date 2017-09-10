@@ -206,4 +206,35 @@ public class DecisionTree {
 
         return H - (HL*PL + HR*PR);
     }
+
+    public void printTree() {
+        printTree(root, 0);
+        System.out.println();
+    }
+
+    private void printTree(DTNode curr, int height) {
+        for(int i = 0; i < height; i++) {
+            System.out.print("| ");
+        }
+        System.out.printf("%s = 0 :",curr.name);
+        if(!curr.left.isLeaf) {
+            System.out.println();
+            printTree(curr.left, height+1);
+        }
+        else {
+            System.out.printf("  %d%n", curr.left.val);
+        }
+
+        for(int i = 0; i < height; i++) {
+            System.out.print("| ");
+        }
+        System.out.printf("%s = 1 :",curr.name);
+        if(!curr.right.isLeaf) {
+            System.out.println();
+            printTree(curr.right, height + 1);
+        }
+        else {
+            System.out.printf("  %d%n", curr.right.val);
+        }
+    }
 }

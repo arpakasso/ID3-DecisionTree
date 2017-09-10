@@ -10,6 +10,7 @@ public class Main {
 
             DecisionTree tree = new DecisionTree(attributes);
             tree.train(atrVal);
+            tree.printTree();
             System.out.println("Finish");
 
         //}
