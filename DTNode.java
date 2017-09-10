@@ -9,15 +9,12 @@ public class DTNode {
     protected ArrayList<Integer> trueList;
     protected ArrayList<Integer> falseList;
 
-    public DTNode(String n, boolean b, double e, ArrayList<Integer> tL, ArrayList<Integer> fL) {
+    public DTNode(String n, boolean b, double e) {
         left = null;
         right = null;
 
         name = n;
         val = b;
         entropy = e;
-
-        trueList = tL;
-        falseList = fL;
     }
 }
