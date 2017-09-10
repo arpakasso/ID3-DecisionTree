@@ -1,11 +1,10 @@
-import java.util.ArrayList;
+import java.util.*;
 
 public class DecisionTree {
     private DTNode root;
     private String[] attributes;
-    // most frequent class value in the entire training set
     private int genVal = -1;
-
+    
     public DecisionTree(String[] attr) {
         attributes = attr;
     }
@@ -150,8 +149,8 @@ public class DecisionTree {
     private void calcGenVal(ArrayList<Integer>[] atrVal) {
         int pos = 0;
         int neg = 0;
-        for (int i = 0; i < atrVal[attributes.length-1].size(); i++) {
-            if (atrVal[attributes.length-1].get(i) == 0) {
+        for (int i = 0; i < atrVal[atrVal.length-1].size(); i++) {
+            if (atrVal[atrVal.length-1].get(i) == 0) {
                 neg++;
             }
             else {
