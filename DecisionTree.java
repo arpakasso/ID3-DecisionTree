@@ -11,8 +11,7 @@ public class DecisionTree {
 
     //find the highest IG of the available attributes
     // not sure if this works correctly
-    public DTNode calcHighIG(ArrayList<Integer>[] atrVal, ArrayList<Integer> indices, boolean[] usedAttributes) {
-
+    public int calcHighIG(ArrayList<Integer>[] atrVal, ArrayList<Integer> indices, boolean[] usedAttributes) {
         double[] IGs = new double[attributes.length-1];
         int pos = 0;
         int neg = 0;
@@ -27,14 +26,12 @@ public class DecisionTree {
         }
 
         double H = calcH(pos, neg);
-        boolean allUsed = true;
         for (int i = 0; i < IGs.length; i++) {
             int posL = 0;
             int negL = 0;
             int posR = 0;
             int negR = 0;
             if (usedAttributes[i] == false) {
-                allUsed = false;
                 for (int k = 0; k < indices.size(); k++) {
                     int clss = atrVal[attributes.length-1].get(indices.get(k));
                     int atr = atrVal[i].get(indices.get(k));
@@ -67,10 +64,53 @@ public class DecisionTree {
             }
         }
         // if node is pure, or all attributes have been used, the node is a leaf
-        if (highIG == 0) {
-            return new DTNode(attributes[IGindex], IGindex, true);
+        return IGindex;
+    }
+
+    // public facing method. Call to create the tree with training data.
+    public void train(ArrayList<Integer>[] atrVal) {
+        boolean[] attr = new boolean[attributes.length-1];
+        ArrayList<Integer> indices = new ArrayList<>();
+        for (int i = 0; i < atrVal[0].size(); i++) {
+            indices.add(i);
         }
-        else if (allUsed) {
+        root = makeTree(atrVal, indices, attr);
+    }
+
+    // private recursive method to make the decision tree
+    private DTNode makeTree(ArrayList<Integer>[] atrVal, ArrayList<Integer> indices, boolean[] usedAttributes) {
+        // curr node will have the attribute with the highest IG
+        int attr = calcHighIG(atrVal, indices, usedAttributes);
+        DTNode curr = new DTNode(attributes[attr], attr, false);
+        // checks for a pure node
+        int posH = 0;
+        int negH = 0;
+        for (int i = 0; i < indices.size(); i++) {
+            if (atrVal[atrVal.length-1].get(indices.get(i)) == 0) {
+                negH++;
+            }
+            else {
+                posH++;
+            }
+        }
+        double currH = calcH(posH, negH);
+        if (currH == 0) {
+            int currVal = 0;
+            if (posH > negH) {
+                currVal = 1;
+            }
+            DTNode rtn = new DTNode(attributes[attributes.length-1], attributes.length-1, true);
+            rtn.val = currVal;
+            return rtn;
+        }
+
+        // checks if all the attributes have been used
+        boolean allUsed = true;
+        for (int j = 0; j < usedAttributes.length; j++) {
+            if (usedAttributes[j] == false)
+                allUsed = false;
+        }
+        if (allUsed) {
             int tru = 0;
             int fal = 0;
             for (int index:indices) {
@@ -98,30 +138,6 @@ public class DecisionTree {
             }
             return rtn;
         }
-
-        return new DTNode(attributes[IGindex], IGindex, false);
-    }
-
-    // public facing method. Call to create the tree with training data.
-    public void train(ArrayList<Integer>[] atrVal) {
-        boolean[] attr = new boolean[attributes.length-1];
-        ArrayList<Integer> indices = new ArrayList<>();
-        for (int i = 0; i < atrVal[0].size(); i++) {
-            indices.add(i);
-        }
-        root = makeTree(atrVal, indices, attr, -1);
-    }
-
-    // private recursive method to make the decision tree
-    private DTNode makeTree(ArrayList<Integer>[] atrVal, ArrayList<Integer> indices, boolean[] usedAttributes, int val) {
-        // curr node will have the attribute with the highest IG
-        DTNode curr = calcHighIG(atrVal, indices, usedAttributes);
-        int attr = curr.index;
-        curr.val = val;
-        // if the node is pure, return it
-        if (curr.isLeaf) {
-            return curr;
-        }
         // else recurse to make the tree
         else {
             // sort the positive and negative records of that attribute
@@ -137,8 +153,8 @@ public class DecisionTree {
             // mark the attribute as used
             usedAttributes[attr] = true;
             // build the tree left and right
-            curr.left = makeTree(atrVal, falseIndices, usedAttributes, 0);
-            curr.right = makeTree(atrVal, trueIndices, usedAttributes, 1);
+            curr.left = makeTree(atrVal, falseIndices, usedAttributes);
+            curr.right = makeTree(atrVal, trueIndices, usedAttributes);
             // unmark before returning the current node
             usedAttributes[attr] = false;
             return curr;

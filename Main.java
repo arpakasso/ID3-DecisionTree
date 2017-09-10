@@ -4,7 +4,7 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) throws FileNotFoundException{
         //if (args.length == 2) {
-            Scanner trainIn = new Scanner(new File("src/hw.dat"));
+            Scanner trainIn = new Scanner(new File("src/train.dat"));
             String[] attributes = trainIn.nextLine().split("\\s+");
             ArrayList<Integer>[] atrVal = readData(trainIn, attributes.length);
 
