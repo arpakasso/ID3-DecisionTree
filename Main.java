@@ -5,7 +5,11 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException{
         //if (args.length == 2) {
             Scanner trainIn = new Scanner(new File("src/train.dat"));
-            String[] attributes = trainIn.nextLine().split("\\s+");
+            String line;
+            do {
+                line = trainIn.nextLine().trim();
+            } while(line.isEmpty());
+            String[] attributes = line.split("\\s+");
             ArrayList<Integer>[] atrVal = readData(trainIn, attributes.length);
 
             DecisionTree tree = new DecisionTree(attributes);
