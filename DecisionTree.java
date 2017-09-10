@@ -10,33 +10,68 @@ public class DecisionTree {
         attributes = attr;
     }
 
-    public int calcHighIG(ArrayList<Integer>[] atrVal, ArrayList<Integer> indices, boolean[] usedAttributes) {
+    //find the highest IG of the available attributes
+    // not sure if this works correctly
+    public DTNode calcHighIG(ArrayList<Integer>[] atrVal, ArrayList<Integer> indices, boolean[] usedAttributes) {
 
-        return 0;
-    }
+        double[] IGs = new double[attributes.length-1];
+        int pos = 0;
+        int neg = 0;
 
-    // public facing method. Call to create the tree with training data.
-    public void train(ArrayList<Integer>[] atrVal) {
-        boolean[] attr = new boolean[attributes.length];
-        ArrayList<Integer> indices = new ArrayList<>();
-        for (int i = 0; i < atrVal[0].size(); i++) {
-            indices.add(i);
+        //find entropy for the current node
+        for (int i = 0; i < indices.size(); i++) {
+            if (atrVal[attributes.length-1].get(indices.get(i)) == 1) {
+                pos++;
+            } else {
+                neg++;
+            }
         }
-        root = makeTree(atrVal, indices, attr, -1);
-    }
 
-    // private recursive method to make the decision tree
-    private DTNode makeTree(ArrayList<Integer>[] atrVal, ArrayList<Integer> indices, boolean[] usedAttributes, int val) {
-        // get the attribute to split on
-        int attr = calcHighIG(atrVal, indices, usedAttributes);
-        DTNode curr = new DTNode(attributes[attr], val);
-        // if the node is pure, return it
-        if (attr == -1) {
-            return curr;
+        double H = calcH(pos, neg);
+        boolean allUsed = true;
+        for (int i = 0; i < IGs.length; i++) {
+            int posL = 0;
+            int negL = 0;
+            int posR = 0;
+            int negR = 0;
+            if (usedAttributes[i] == false) {
+                allUsed = false;
+                for (int k = 0; k < indices.size(); k++) {
+                    int clss = atrVal[attributes.length-1].get(indices.get(k));
+                    int atr = atrVal[i].get(indices.get(k));
+                    if (atr == 1 && clss == 1) {
+                        posL++;
+                    }
+                    else if (atr == 1 && clss == 0) {
+                        negL++;
+                    }
+                    else if (atr == 0 && clss == 1) {
+                        posR++;
+                    }
+                    else if (atr == 0 && clss == 0) {
+                        negR++;
+                    }
+                }
+                IGs[i] = calcIG(calcH(posL, negL), posL+negL, calcH(posR, negR), posR+negR, H);
+            } else {
+                IGs[i] = -1;
+            }
         }
-        // else you've run out of attributes to use
-        else if (attr == -2) {
-            // get true and false values of the node
+
+        // find the index of attribute with the highest IG
+        int IGindex = 0;
+        double highIG = -1;
+        for (int hi = 0; hi < IGs.length; hi++) {
+            if (IGs[hi] > highIG) {
+                highIG = IGs[hi];
+                IGindex = hi;
+            }
+        }
+        // if node is pure, or all attributes have been used, the node is a leaf
+        if (highIG == 0) {
+            return new DTNode(attributes[IGindex], IGindex, true);
+        }
+        else if (allUsed) {
             int tru = 0;
             int fal = 0;
             for (int index:indices) {
@@ -48,19 +83,44 @@ public class DecisionTree {
                 }
             }
             // assign value according to which value is dominant
+            DTNode rtn = new DTNode(attributes[attributes.length-1], attributes.length-1, true);
             if (fal > tru) {
-                curr = new DTNode(attributes[attr], 0);
+                rtn.val = 0;
             }
             else if (tru > fal) {
-                curr = new DTNode(attributes[attr], 1);
+                rtn.val = 1;
             }
             // else if the values are even, assign to the overall dominant value
             else {
                 if (genVal == -1) {
                     calcGenVal(atrVal);
                 }
-                curr = new DTNode(attributes[attr], genVal);
+                rtn.val = genVal;
             }
+            return rtn;
+        }
+
+        return new DTNode(attributes[IGindex], IGindex, false);
+    }
+
+    // public facing method. Call to create the tree with training data.
+    public void train(ArrayList<Integer>[] atrVal) {
+        boolean[] attr = new boolean[attributes.length-1];
+        ArrayList<Integer> indices = new ArrayList<>();
+        for (int i = 0; i < atrVal[0].size(); i++) {
+            indices.add(i);
+        }
+        root = makeTree(atrVal, indices, attr, -1);
+    }
+
+    // private recursive method to make the decision tree
+    private DTNode makeTree(ArrayList<Integer>[] atrVal, ArrayList<Integer> indices, boolean[] usedAttributes, int val) {
+        // curr node will have the attribute with the highest IG
+        DTNode curr = calcHighIG(atrVal, indices, usedAttributes);
+        int attr = curr.index;
+        curr.val = val;
+        // if the node is pure, return it
+        if (curr.isLeaf) {
             return curr;
         }
         // else recurse to make the tree

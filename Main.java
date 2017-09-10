@@ -4,21 +4,13 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) throws FileNotFoundException{
         //if (args.length == 2) {
-            Scanner trainIn = new Scanner(new File("src/train.dat"));
+            Scanner trainIn = new Scanner(new File("src/hw.dat"));
             String[] attributes = trainIn.nextLine().split("\\s+");
             ArrayList<Integer>[] atrVal = readData(trainIn, attributes.length);
 
-            int tru = 0;
-            int fal = 0;
-            for(int y = 0; y < atrVal[0].size(); y++) {
-                if(atrVal[atrVal.length-1].get(y) == 0) {
-                    fal++;
-                }
-                else {
-                    tru++;
-                }
-            }
             DecisionTree tree = new DecisionTree(attributes);
+            tree.train(atrVal);
+            System.out.println("Finish");
 
         //}
         //else {

@@ -1,16 +1,20 @@
 import java.util.*;
 
 public class DTNode {
-    protected DTNode left;
-    protected DTNode right;
+    DTNode left;
+    DTNode right;
+    int index;
     String name;
     int val;
+    boolean isLeaf;
 
-    public DTNode(String n, int b) {
+    // Constructor, needs name, index in attribute array, and boolean denoting if the node is a leaf
+    public DTNode(String n, int ind, boolean l) {
         left = null;
         right = null;
 
         name = n;
-        val = b;
+        index = ind;
+        isLeaf = l;
     }
 }
