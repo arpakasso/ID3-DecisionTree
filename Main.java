@@ -18,7 +18,8 @@ public class Main {
                     tru++;
                 }
             }
-            DecisionTree tree = new DecisionTree(new DTNode("Class", true, DecisionTree.calcH(tru, fal)), attributes);
+            
+            DecisionTree tree = new DecisionTree(attributes);
 
         //}
         //else {

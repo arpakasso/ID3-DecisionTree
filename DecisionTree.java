@@ -1,11 +1,13 @@
 import java.util.*;
+
 public class DecisionTree {
     private DTNode root;
     private String[] attributes;
+    private int genVal = -1;
     private ArrayList<Integer>[] atrVal;
 
-    public DecisionTree(DTNode r, String[] attr) {
-        root = r;
+    
+    public DecisionTree(String[] attr) {
         attributes = attr;
     }
     
@@ -67,34 +69,6 @@ public class DecisionTree {
         
         return IGindex;
         
-//        double[] IGs = new double[attributes.length-1];
-//        int posL = 0;
-//        int negL = 0;
-//        int posR = 0;
-//        int negR = 0;
-//        
-//        for (int i = 0; i < IGs.length; i++) {
-//            
-//            for (int j = 0; j < atrVal[i].size(); j++) {
-//                if (atrVal[i].get(j) == 1 && atrVal[atrVal[0].size()-1].get(j) == 1) {
-//                    posL++;
-//                }
-//                else if (atrVal[i].get(j) == 1 && atrVal[atrVal[0].size()-1].get(j) == 0) {
-//                    negL++;
-//                }
-//                else if (atrVal[i].get(j) == 0 && atrVal[atrVal[0].size()-1].get(j) == 1) {
-//                    posR++;
-//                }
-//                else if (atrVal[i].get(j) == 0 && atrVal[atrVal[0].size()-1].get(j) == 0) {
-//                    negR++;
-//                }
-//            }
-//            
-//            IGs[i] = calcIG(calcH(posL, negL), posL+negL, calcH(posR, negR), posR+negR, parent.entropy);
-//        }
-        
-        
-//        return 0;
     }
     
     
