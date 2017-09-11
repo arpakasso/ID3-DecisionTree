@@ -4,7 +4,7 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) throws FileNotFoundException{
         //if (args.length == 2) {
-            Scanner trainIn = new Scanner(new File("src/train.dat"));
+            Scanner trainIn = new Scanner(new File(/*args[0]*/"src/train.dat"));
             String line;
             do {
                 line = trainIn.nextLine().trim();
@@ -16,6 +16,14 @@ public class Main {
             tree.train(atrVal);
             tree.printTree();
             System.out.println("Finish");
+
+            Scanner testIn = new Scanner(new File(/*args[1]*/"src/test.dat"));
+            do {
+                line = testIn.nextLine().trim();
+            } while(line.isEmpty());
+            attributes = line.split("\\s+");
+            atrVal = readData(testIn, attributes.length);
+
 
         //}
         //else {
