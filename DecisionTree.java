@@ -76,6 +76,37 @@ public class DecisionTree {
         }
         root = makeTree(atrVal, indices, attr);
     }
+    
+    //public facing method, call to get accuracy of decision tree
+    public int[] classify(ArrayList<Integer>[] atrVal) {
+        int[] accuracyArr = new int[2];
+
+        for (int i = 0; i < atrVal[0].size(); i++) {
+            traverse(atrVal, i, root, accuracyArr);
+        }
+
+        return accuracyArr;
+    }
+    
+    //private method to traverse the tree and find correct and incorrect classifications
+    private void traverse(ArrayList<Integer>[] atrVal, int row, DTNode root, int[] accuracyArr) {
+        if (root.isLeaf == true) {
+            //take root value and compare it to class value
+            if (root.val == atrVal[atrVal.length-1].get(row)) {
+                accuracyArr[0]++;
+            } else {
+                accuracyArr[1]++;       //when they don't match
+            }
+        }
+        else {
+            if (atrVal[root.index].get(row) == 0) {
+                traverse(atrVal, row, root.left, accuracyArr);
+            } else {
+                traverse(atrVal, row, root.right, accuracyArr);
+            }
+            return;
+        }
+    }
 
     // private recursive method to make the decision tree
     private DTNode makeTree(ArrayList<Integer>[] atrVal, ArrayList<Integer> indices, boolean[] usedAttributes) {

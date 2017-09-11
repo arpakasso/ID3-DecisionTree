@@ -15,7 +15,15 @@ public class Main {
             DecisionTree tree = new DecisionTree(attributes);
             tree.train(atrVal);
             tree.printTree();
-            System.out.println("Finish");
+            DecisionTree tree = new DecisionTree(attributes);
+            tree.train(atrVal);
+            tree.printTree();
+            int[] accuracyArr = tree.classify(atrVal);
+            double percent = (accuracyArr[0]*1.0/(accuracyArr[1]+accuracyArr[0])) * 100;
+            System.out.printf("Accuracy on training set (%d instances): %.1f%%%n", atrVal[0].size(), percent);
+            System.out.println();
+            accuracyArr = tree.classify(atrVal);
+            System.out.printf("Accuracy on test set (%d instances): %.1f%%%n", atrVal[0].size(), percent);
 
             Scanner testIn = new Scanner(new File(/*args[1]*/"src/test.dat"));
             do {
