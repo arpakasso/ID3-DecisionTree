@@ -4,7 +4,7 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) throws FileNotFoundException{
         //if (args.length == 2) {
-            Scanner trainIn = new Scanner(new File(/*args[0]*/"src/train.dat"));
+            Scanner trainIn = new Scanner(new File(/*args[0]*/"src/train2.dat"));
             String line;
             do {
                 line = trainIn.nextLine().trim();
@@ -15,23 +15,22 @@ public class Main {
             DecisionTree tree = new DecisionTree(attributes);
             tree.train(atrVal);
             tree.printTree();
-            DecisionTree tree = new DecisionTree(attributes);
-            tree.train(atrVal);
-            tree.printTree();
+
             int[] accuracyArr = tree.classify(atrVal);
             double percent = (accuracyArr[0]*1.0/(accuracyArr[1]+accuracyArr[0])) * 100;
-            System.out.printf("Accuracy on training set (%d instances): %.1f%%%n", atrVal[0].size(), percent);
+            System.out.printf("Accuracy on training set (%d instances):  %.1f%%%n", atrVal[0].size(), percent);
             System.out.println();
-            accuracyArr = tree.classify(atrVal);
-            System.out.printf("Accuracy on test set (%d instances): %.1f%%%n", atrVal[0].size(), percent);
 
-            Scanner testIn = new Scanner(new File(/*args[1]*/"src/test.dat"));
+            Scanner testIn = new Scanner(new File(/*args[1]*/"src/test2.dat"));
             do {
                 line = testIn.nextLine().trim();
             } while(line.isEmpty());
             attributes = line.split("\\s+");
             atrVal = readData(testIn, attributes.length);
 
+            accuracyArr = tree.classify(atrVal);
+            percent = (accuracyArr[0]*1.0/(accuracyArr[1]+accuracyArr[0])) * 100;
+            System.out.printf("Accuracy on test set (%d instances):  %.1f%%%n", atrVal[0].size(), percent);
 
         //}
         //else {

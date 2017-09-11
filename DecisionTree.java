@@ -141,7 +141,18 @@ public class DecisionTree {
             if (usedAttributes[j] == false)
                 allUsed = false;
         }
-        if (allUsed) {
+
+        // checks if all the attribute values are the same (there are inconsistent records)
+        boolean attrAllSame = true;
+        for (int i = 0; i < atrVal.length-1 && attrAllSame; i++) {
+            for (int j = 0; j < indices.size()-1 && attrAllSame; j++) {
+                if (atrVal[i].get(indices.get(j)) != atrVal[i].get(indices.get(j+1))) {
+                    attrAllSame = false;
+                }
+            }
+        }
+
+        if (allUsed || attrAllSame) {
             int tru = 0;
             int fal = 0;
             for (int index:indices) {
@@ -213,7 +224,7 @@ public class DecisionTree {
     }
 
     // calculates entropy
-    public static double calcH(int pos, int neg) {
+    public double calcH(int pos, int neg) {
         double total = pos + neg;
 
         //System.out.println("Total is " + total);
@@ -230,7 +241,7 @@ public class DecisionTree {
 
     // calculates information gain
     // (entropy of left child node, # of values in left node, entropy of right child node, # of values in right node, entropy of current node)
-    public static double calcIG(double HL, double totalL, double HR, double totalR, double H ) {
+    public double calcIG(double HL, double totalL, double HR, double totalR, double H ) {
         double total = totalL + totalR;
         double PR = totalR/total;
         double PL = totalL/total;
