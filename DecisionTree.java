@@ -1,17 +1,34 @@
+/**
+ * Binary Decision Tree. This class describes an ID3 Decision Tree that accepts binary classifications.
+ */
+
 import java.util.*;
 
 public class DecisionTree {
-    private DTNode root;
-    private String[] attributes;
-    private int genVal = -1;
-    
+    private DTNode root;            // reference to the tree root node
+    private String[] attributes;    // attribute array; contains attribute names
+    private int genVal = -1;        // the dominant class value of the whole data
+                                    // only calculated when needed to break ties
+
+    /**
+     * Constructor.
+     *
+     * @param attr attribute array
+     */
     public DecisionTree(String[] attr) {
         attributes = attr;
     }
 
-    //find the highest IG of the available attributes
-    // not sure if this works correctly
-    public int calcHighIG(ArrayList<Integer>[] atrVal, ArrayList<Integer> indices, boolean[] usedAttributes) {
+    /**
+     * Finds the highest information gain (IG) of the available attributes
+     *
+     * @param atrVal values for attributes
+     * @param indices indices of relevant values; used to reference atrVal
+     * @param usedAttributes marks whether an attribute has been used
+     *                       true values mean the attribute has beed used
+     * @return returns index of attribute with highest IG; used to reference attribute array
+     */
+    private int calcHighIG(ArrayList<Integer>[] atrVal, ArrayList<Integer> indices, boolean[] usedAttributes) {
         double[] IGs = new double[attributes.length-1];
         int pos = 0;
         int neg = 0;
@@ -67,7 +84,11 @@ public class DecisionTree {
         return IGindex;
     }
 
-    // public facing method. Call to create the tree with training data.
+    /**
+     * Public facing method. Call to create the tree with training data.
+     *
+     * @param atrVal values for attributes
+     */
     public void train(ArrayList<Integer>[] atrVal) {
         boolean[] attr = new boolean[attributes.length-1];
         ArrayList<Integer> indices = new ArrayList<>();
@@ -76,8 +97,14 @@ public class DecisionTree {
         }
         root = makeTree(atrVal, indices, attr);
     }
-    
-    //public facing method, call to get accuracy of decision tree
+
+    /**
+     * Public facing method. Call to test data on the tree and get accuracy of decision tree.
+     *
+     * @param atrVal values for attributes
+     * @return int[0] contains # of records that resolve to the correct class value
+     *         int[1] contains # of records that resolve to the incorrect class value
+     */
     public int[] classify(ArrayList<Integer>[] atrVal) {
         int[] accuracyArr = new int[2];
 
@@ -87,8 +114,15 @@ public class DecisionTree {
 
         return accuracyArr;
     }
-    
-    //private method to traverse the tree and find correct and incorrect classifications
+
+    /**
+     * Private method to traverse the tree and find correct and incorrect classifications.
+     *
+     * @param atrVal values for attributes
+     * @param row index for the record being checked; used to reference atrVal
+     * @param root current node visited in the tree
+     * @param accuracyArr number of correct and incorrect classifications
+     */
     private void traverse(ArrayList<Integer>[] atrVal, int row, DTNode root, int[] accuracyArr) {
         if (root.isLeaf == true) {
             //take root value and compare it to class value
@@ -108,7 +142,15 @@ public class DecisionTree {
         }
     }
 
-    // private recursive method to make the decision tree
+    /**
+     * Private recursive method to make the decision tree.
+     *
+     * @param atrVal values for attributes
+     * @param indices indices of relevant values; used to reference atrVal
+     * @param usedAttributes marks whether an attribute has been used
+     *                       true values mean the attribute has beed used
+     * @return returns the current node
+     */
     private DTNode makeTree(ArrayList<Integer>[] atrVal, ArrayList<Integer> indices, boolean[] usedAttributes) {
         // curr node will have the attribute with the highest IG
         int attr = calcHighIG(atrVal, indices, usedAttributes);
@@ -203,7 +245,12 @@ public class DecisionTree {
         }
     }
 
-    // calculate the overall dominant value
+    /**
+     * Calculate the overall dominant value; stored in genVal class variable.
+     * Used to tiebreak when examples are equally split among classes at a leaf node.
+     *
+     * @param atrVal values for attributes
+     */
     private void calcGenVal(ArrayList<Integer>[] atrVal) {
         int pos = 0;
         int neg = 0;
@@ -223,8 +270,14 @@ public class DecisionTree {
         }
     }
 
-    // calculates entropy
-    public double calcH(int pos, int neg) {
+    /**
+     * Calculates entropy of the "node", given pos and neg values.
+     *
+     * @param pos number of true/positive class values
+     * @param neg number of false/negative class values
+     * @return returns entropy value
+     */
+    private double calcH(int pos, int neg) {
         double total = pos + neg;
 
         //System.out.println("Total is " + total);
@@ -239,9 +292,17 @@ public class DecisionTree {
 
     }
 
-    // calculates information gain
-    // (entropy of left child node, # of values in left node, entropy of right child node, # of values in right node, entropy of current node)
-    public double calcIG(double HL, double totalL, double HR, double totalR, double H ) {
+    /**
+     *  Calculates information gain for a particular attribute with respect to the current attribute.
+     *
+     * @param HL entropy of left child node
+     * @param totalL # of values in left node
+     * @param HR entropy of right child node
+     * @param totalR # of values in right node
+     * @param H entropy of current node
+     * @return returns information gain for that particular attribute
+     */
+    private double calcIG(double HL, double totalL, double HR, double totalR, double H ) {
         double total = totalL + totalR;
         double PR = totalR/total;
         double PL = totalL/total;
@@ -249,11 +310,21 @@ public class DecisionTree {
         return H - (HL*PL + HR*PR);
     }
 
+    /**
+     * Public facing method to print the tree.
+     */
     public void printTree() {
         printTree(root, 0);
         System.out.println();
     }
 
+    /**
+     * Private recursive method.
+     * Traverses the tree to print each node's attribute and relevant values in the proper format.
+     *
+     * @param curr the current node visited
+     * @param height the height of the node in the tree, used for printing pipes (|)
+     */
     private void printTree(DTNode curr, int height) {
         for(int i = 0; i < height; i++) {
             System.out.print("| ");
